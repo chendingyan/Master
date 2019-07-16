@@ -58,7 +58,7 @@ class DatasetFromFilename(Dataset):
         return self.transforms(img), torch.tensor([[self.y[idx]]])
 
 # test code
-old_dir = '/Users/mikechen/Downloads/celeba_original/images'
+old_dir = '/Users/mikechen/bitmoji'
 splitter = ImageFolderSplitter(old_dir)
 transforms = Compose([ToTensor()])
 x_train = splitter.getTrainingDataset()
@@ -67,13 +67,13 @@ print(x_train[0])
 x_test = splitter.getValidationDataset()
 print(len(x_test))
 # shutil.copyfile
-new_dir = '/Users/mikechen/Downloads/celeba_original/trainA'
+new_dir = '/Users/mikechen/moji/trainB'
 for pic in x_train:
     old = old_dir+'/'+pic
     new = new_dir+'/'+pic
     shutil.copyfile(old,new)
 
-new_dir = '/Users/mikechen/Downloads/celeba_original/testA'
+new_dir = '/Users/mikechen/moji/testB'
 for pic in x_test:
     old = old_dir+'/'+pic
     new = new_dir+'/'+pic

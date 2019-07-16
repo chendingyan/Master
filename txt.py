@@ -12,9 +12,9 @@ def ListFilesToTxt(dir, file, wildcard, recursion):
 
 
 def Test():
-    dir = "/Users/mikechen/Downloads/celeba_original/testA"
-    outfile = "/Users/mikechen/Downloads/celeba_original/list_testA.txt"
-    wildcard = ".jpg"
+    dir = "/Users/mikechen/moji/testB"
+    outfile = "/Users/mikechen/moji/list_testB.txt"
+    wildcard = ".png"
 
     file = open(outfile, "w")
     if not file:
