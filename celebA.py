@@ -7,8 +7,18 @@ new_txt = '/Users/mikechen/Downloads/Anno/female_list.txt'
 new_txt1 = '/Users/mikechen/Downloads/Anno/female_list_headpose.txt'
 new_txt2 = '/Users/mikechen/Downloads/Anno/female_list_headpose1.txt'
 old_dir = '/Users/mikechen/Downloads/img_align_celeba'
-new_dir = 'r'
+new_dir = '/Users/mikechen/Downloads/celebA'
 data_path = '/Users/mikechen/Downloads/proc_align_celeba.pkl'
+
+def process():
+    ob = pickle.load(open(data_path, 'rb'))
+    with open(new_txt2) as f:
+        for line in f:
+            num = line[0:-5]
+            landmarks = ob[num]['landmarks']
+            landmark_socres = ob[num]['landmark_scores']
+            print ('landmarks' , landmarks)
+            print ('landmark_socres' , landmark_socres)
 
 def del_head_pose():
     ob = pickle.load(open(data_path, 'rb'))
@@ -110,8 +120,10 @@ def filter_female():
 
 # copyfiles()
 # draw_head_pose()
-count = 0
-with open(new_txt, 'r') as f:
-    for line in f:
-        count += 1
-print(count)
+# count = 0
+# with open(new_txt, 'r') as f:
+#     for line in f:
+#         count += 1
+# print(count)
+if __name__ == '__main__':
+    process()
