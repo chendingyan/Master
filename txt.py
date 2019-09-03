@@ -12,8 +12,8 @@ def ListFilesToTxt(dir, file, wildcard, recursion):
 
 
 def Test():
-    dir = "/Users/mikechen/celebA/trainA"
-    outfile = "/Users/mikechen/celebA/list_trainA.txt"
+    dir = '/Users/mikechen/celebA_All/trainA'
+    outfile = '/Users/mikechen/celebA_All/list_trainA.txt'
     wildcard = ".jpg"
 
     file = open(outfile, "w")
