@@ -35,14 +35,14 @@ class MUNIT_Trainer(nn.Module):
                                         lr=lr, betas=(beta1, beta2), weight_decay=hyperparameters['weight_decay'])
         self.gen_opt = torch.optim.Adam([p for p in gen_params if p.requires_grad],
                                         lr=lr, betas=(beta1, beta2), weight_decay=hyperparameters['weight_decay'])
-        self.dis_scheduler = get_scheduler(self.dis_opt, hyperparameters)
-        self.gen_scheduler = get_scheduler(self.gen_opt, hyperparameters)
+        self.dis_scheduler, self.lr_policy = get_scheduler(self.dis_opt, hyperparameters)
+        self.gen_scheduler, self.lr_policy = get_scheduler(self.gen_opt, hyperparameters)
 
         # Network weight initialization
         self.apply(weights_init(hyperparameters['init']))
         self.dis_a.apply(weights_init('gaussian'))
         self.dis_b.apply(weights_init('gaussian'))
-
+        self.metric = 0
         # Load VGG model if needed
         if 'vgg_w' in hyperparameters.keys() and hyperparameters['vgg_w'] > 0:
             self.vgg = load_vgg16(hyperparameters['vgg_model_path'] + '/models')
@@ -63,26 +63,39 @@ class MUNIT_Trainer(nn.Module):
         x_ab = self.gen_b.decode(c_a, s_b)
         self.train()
         return x_ab, x_ba
-
-    def gen_update(self, x_a, x_b, hyperparameters):
+    # 进来两张图 a b
+    def gen_update(self, x_a, x_b, hyperparameters, mask):
+        self.guided = 0
+        print(type(mask))
         self.gen_opt.zero_grad()
+        # 随机出style a b
         s_a = Variable(torch.randn(x_a.size(0), self.style_dim, 1, 1).cuda())
         s_b = Variable(torch.randn(x_b.size(0), self.style_dim, 1, 1).cuda())
         # encode
+        # 通过gen 得到content  style'
         c_a, s_a_prime = self.gen_a.encode(x_a)
         c_b, s_b_prime = self.gen_b.encode(x_b)
-        # decode (within domain)
+        # decode (within domain) 把encoder decoder应该要能recon
         x_a_recon = self.gen_a.decode(c_a, s_a_prime)
         x_b_recon = self.gen_b.decode(c_b, s_b_prime)
-        # decode (cross domain)
-        x_ba = self.gen_a.decode(c_b, s_a)
-        x_ab = self.gen_b.decode(c_a, s_b)
-        # encode again
+        # decode (cross domain) 如果结合content 和style 得到的应该是translation结束的结果
+        if self.guided == 0:
+            x_ba = self.gen_a.decode(c_b, s_a)
+            x_ab = self.gen_b.decode(c_a, s_b)
+        elif self.guided == 1:
+            x_ba = self.gen_a.decode(c_b, s_a_prime)
+            x_ab = self.gen_b.decode(c_a, s_b_prime)
+        # encode again 再区分conten style
         c_b_recon, s_a_recon = self.gen_a.encode(x_ba)
         c_a_recon, s_b_recon = self.gen_b.encode(x_ab)
         # decode again (if needed)
         x_aba = self.gen_a.decode(c_a_recon, s_a_prime) if hyperparameters['recon_x_cyc_w'] > 0 else None
         x_bab = self.gen_b.decode(c_b_recon, s_b_prime) if hyperparameters['recon_x_cyc_w'] > 0 else None
+        print(x_a_recon.size(), x_b_recon.size())
+
+        # mask loss
+        mask = torch.cat([mask, mask, mask], 1)
+        self.loss_attentive = self.recon_criterion(x_a[mask == 1] , x_a_recon[mask == 1])
 
         # reconstruction loss
         self.loss_gen_recon_x_a = self.recon_criterion(x_a_recon, x_a)
@@ -111,7 +124,8 @@ class MUNIT_Trainer(nn.Module):
                               hyperparameters['recon_x_cyc_w'] * self.loss_gen_cycrecon_x_a + \
                               hyperparameters['recon_x_cyc_w'] * self.loss_gen_cycrecon_x_b + \
                               hyperparameters['vgg_w'] * self.loss_gen_vgg_a + \
-                              hyperparameters['vgg_w'] * self.loss_gen_vgg_b
+                              hyperparameters['vgg_w'] * self.loss_gen_vgg_b + \
+                              hyperparameters['att_w'] * self.loss_attentive
         self.loss_gen_total.backward()
         self.gen_opt.step()
 
@@ -143,7 +157,9 @@ class MUNIT_Trainer(nn.Module):
         x_ab1, x_ab2 = torch.cat(x_ab1), torch.cat(x_ab2)
         self.train()
         return x_a, x_a_recon, x_ab1, x_ab2, x_b, x_b_recon, x_ba1, x_ba2
-
+    # 训练discriminator 输入两张图片，各自转成不同的domain。
+    # 使用各自的content code，但是使用随机的style code，去encode出一张图片
+    # 希望能骗过discriminator
     def dis_update(self, x_a, x_b, hyperparameters):
         self.dis_opt.zero_grad()
         s_a = Variable(torch.randn(x_a.size(0), self.style_dim, 1, 1).cuda())
@@ -163,9 +179,15 @@ class MUNIT_Trainer(nn.Module):
 
     def update_learning_rate(self):
         if self.dis_scheduler is not None:
-            self.dis_scheduler.step()
+            if self.lr_policy == 'plateau':
+                self.dis_scheduler.step(self.metric)
+            else:
+                self.dis_scheduler.step()
         if self.gen_scheduler is not None:
-            self.gen_scheduler.step()
+            if self.lr_policy == 'plateau':
+                self.dis_scheduler.step(self.metric)
+            else:
+                self.gen_scheduler.step()
 
     def resume(self, checkpoint_dir, hyperparameters):
         # Load generators
@@ -184,8 +206,8 @@ class MUNIT_Trainer(nn.Module):
         self.dis_opt.load_state_dict(state_dict['dis'])
         self.gen_opt.load_state_dict(state_dict['gen'])
         # Reinitilize schedulers
-        self.dis_scheduler = get_scheduler(self.dis_opt, hyperparameters, iterations)
-        self.gen_scheduler = get_scheduler(self.gen_opt, hyperparameters, iterations)
+        self.dis_scheduler, self.lr_policy = get_scheduler(self.dis_opt, hyperparameters, iterations)
+        self.gen_scheduler, self.lr_policy = get_scheduler(self.gen_opt, hyperparameters, iterations)
         print('Resume from iteration %d' % iterations)
         return iterations
 
@@ -209,7 +231,7 @@ class UNIT_Trainer(nn.Module):
         self.dis_a = MsImageDis(hyperparameters['input_dim_a'], hyperparameters['dis'])  # discriminator for domain a
         self.dis_b = MsImageDis(hyperparameters['input_dim_b'], hyperparameters['dis'])  # discriminator for domain b
         self.instancenorm = nn.InstanceNorm2d(512, affine=False)
-
+        self.metric = 0
         # Setup the optimizers
         beta1 = hyperparameters['beta1']
         beta2 = hyperparameters['beta2']
@@ -219,8 +241,8 @@ class UNIT_Trainer(nn.Module):
                                         lr=lr, betas=(beta1, beta2), weight_decay=hyperparameters['weight_decay'])
         self.gen_opt = torch.optim.Adam([p for p in gen_params if p.requires_grad],
                                         lr=lr, betas=(beta1, beta2), weight_decay=hyperparameters['weight_decay'])
-        self.dis_scheduler = get_scheduler(self.dis_opt, hyperparameters)
-        self.gen_scheduler = get_scheduler(self.gen_opt, hyperparameters)
+        self.dis_scheduler, self.lr_policy = get_scheduler(self.dis_opt, hyperparameters)
+        self.gen_scheduler, self.lr_policy = get_scheduler(self.gen_opt, hyperparameters)
 
         # Network weight initialization
         self.apply(weights_init(hyperparameters['init']))
@@ -273,7 +295,7 @@ class UNIT_Trainer(nn.Module):
         # decode again (if needed)
         x_aba = self.gen_a.decode(h_a_recon + n_a_recon) if hyperparameters['recon_x_cyc_w'] > 0 else None
         x_bab = self.gen_b.decode(h_b_recon + n_b_recon) if hyperparameters['recon_x_cyc_w'] > 0 else None
-
+        print(len(x_a_recon), len(x_b_recon))
         # reconstruction loss
         self.loss_gen_recon_x_a = self.recon_criterion(x_a_recon, x_a)
         self.loss_gen_recon_x_b = self.recon_criterion(x_b_recon, x_b)
@@ -345,9 +367,15 @@ class UNIT_Trainer(nn.Module):
 
     def update_learning_rate(self):
         if self.dis_scheduler is not None:
-            self.dis_scheduler.step()
+            if self.lr_policy == 'plateau':
+                self.dis_scheduler.step(self.metric)
+            else:
+                self.dis_scheduler.step()
         if self.gen_scheduler is not None:
-            self.gen_scheduler.step()
+            if self.lr_policy == 'plateau':
+                self.dis_scheduler.step(self.metric)
+            else:
+                self.gen_scheduler.step()
 
     def resume(self, checkpoint_dir, hyperparameters):
         # Load generators
@@ -366,8 +394,8 @@ class UNIT_Trainer(nn.Module):
         self.dis_opt.load_state_dict(state_dict['dis'])
         self.gen_opt.load_state_dict(state_dict['gen'])
         # Reinitilize schedulers
-        self.dis_scheduler = get_scheduler(self.dis_opt, hyperparameters, iterations)
-        self.gen_scheduler = get_scheduler(self.gen_opt, hyperparameters, iterations)
+        self.dis_scheduler, self.lr_policy = get_scheduler(self.dis_opt, hyperparameters, iterations)
+        self.gen_scheduler, self.lr_policy = get_scheduler(self.gen_opt, hyperparameters, iterations)
         print('Resume from iteration %d' % iterations)
         return iterations
 
