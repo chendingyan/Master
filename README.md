@@ -20,7 +20,9 @@ Anime-Comic-Game (ACG) subculture sustains a billion-pound industry and has mil-
 
 ### Dataset
 Anime faces: [https://www.thiswaifudoesnotexist.net/](https://www.thiswaifudoesnotexist.net/)
+
 BitMoji: [https://google.github.io/cartoonset/index.html](https://google.github.io/cartoonset/index.html)
+
 Manga: Manga109
 
 ### Pre-requisite
@@ -60,5 +62,5 @@ In my dissertation...
 
 ![enter image description here](https://picasaweb.google.com/109592484409092847965/6732498466542821969#6732498472290306418)
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbMzc1MzI1ODQwXX0=
+eyJoaXN0b3J5IjpbMzExNzQ2MDY0LDM3NTMyNTg0MF19
 -->
