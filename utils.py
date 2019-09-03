@@ -50,12 +50,13 @@ def get_all_data_loaders(conf):
         new_size_b = conf['new_size_b']
     height = conf['crop_image_height']
     width = conf['crop_image_width']
+    mask_path = conf['mask_path']
 
     if 'data_root' in conf:
         train_loader_a = get_data_loader_folder(os.path.join(conf['data_root'], 'trainA'), batch_size, True,
-                                              new_size_a, height, width, num_workers, True)
+                                              new_size_a, height, width, num_workers, True, mask_path)
         test_loader_a = get_data_loader_folder(os.path.join(conf['data_root'], 'testA'), batch_size, False,
-                                             new_size_a, new_size_a, new_size_a, num_workers, True)
+                                             new_size_a, new_size_a, new_size_a, num_workers, True, mask_path)
         train_loader_b = get_data_loader_folder(os.path.join(conf['data_root'], 'trainB'), batch_size, True,
                                               new_size_b, height, width, num_workers, True)
         test_loader_b = get_data_loader_folder(os.path.join(conf['data_root'], 'testB'), batch_size, False,
@@ -86,7 +87,7 @@ def get_data_loader_list(root, file_list, batch_size, train, new_size=None,
     return loader
 
 def get_data_loader_folder(input_folder, batch_size, train, new_size=None,
-                           height=256, width=256, num_workers=4, crop=True):
+                           height=256, width=256, num_workers=4, crop=True, mask_path = None):
     transform_list = [transforms.ToTensor(),
                       transforms.Normalize((0.5, 0.5, 0.5),
                                            (0.5, 0.5, 0.5))]
@@ -94,14 +95,20 @@ def get_data_loader_folder(input_folder, batch_size, train, new_size=None,
     transform_list = [transforms.Resize(new_size)] + transform_list if new_size is not None else transform_list
     transform_list = [transforms.RandomHorizontalFlip()] + transform_list if train else transform_list
     transform = transforms.Compose(transform_list)
-    dataset = ImageFolder(input_folder, transform=transform)
+
+    mask_transform_list = [transforms.ToTensor()]
+    mask_transform_list = [transforms.RandomCrop((height, width))] + mask_transform_list if crop else mask_transform_list
+    mask_transform_list = [transforms.Resize(new_size)] + mask_transform_list if new_size is not None else mask_transform_list
+    mask_transform_list = [transforms.RandomHorizontalFlip()] + mask_transform_list if train else mask_transform_list
+    mask_transform = transforms.Compose(mask_transform_list)
+    dataset = ImageFolder(input_folder, transform=transform, mask_transform= mask_transform , mask_path = mask_path)
     loader = DataLoader(dataset=dataset, batch_size=batch_size, shuffle=train, drop_last=True, num_workers=num_workers)
     return loader
 
 
 def get_config(config):
     with open(config, 'r') as stream:
-        return yaml.load(stream)
+        return yaml.load(stream,Loader=yaml.FullLoader)
 
 
 def eformat(f, prec):
@@ -266,9 +273,13 @@ def get_scheduler(optimizer, hyperparameters, iterations=-1):
     elif hyperparameters['lr_policy'] == 'step':
         scheduler = lr_scheduler.StepLR(optimizer, step_size=hyperparameters['step_size'],
                                         gamma=hyperparameters['gamma'], last_epoch=iterations)
+    elif hyperparameters['lr_policy'] == 'plateau':
+        scheduler = lr_scheduler.ReduceLROnPlateau(optimizer, mode='min', factor = 0.2, threshold= 0.01, patience=5)
+    elif hyperparameters['lr_policy'] == 'cosine':
+        scheduler = lr_scheduler.CosineAnnealingLR(optimizer, T_max= hyperparameters['t_max'], eta_min=0)
     else:
         return NotImplementedError('learning rate policy [%s] is not implemented', hyperparameters['lr_policy'])
-    return scheduler
+    return scheduler, hyperparameters['lr_policy']
 
 
 def weights_init(init_type='gaussian'):
