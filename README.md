@@ -45,7 +45,11 @@ Manga: Manga109
 All algorithms have been trained on imperial department of computing remote machine, which is Ubuntu 16.04 with graphicial processing unit supported. I trained on available NVIDIA GeForce GTX 1080 Ti graphics card on dc1218@ladybug.doc.ic.ac.uk.
 
 ### Code Usage
-In my 
+In my dissertation...
+
+### Result preview
+![enter image description here](https://picasaweb.google.com/109592484409092847965/6732498200469472481#6732498205487171938)
+
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbLTk5MTY3NjYyNF19
+eyJoaXN0b3J5IjpbMjgzNjQxMjIwXX0=
 -->
