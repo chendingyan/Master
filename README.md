@@ -14,10 +14,13 @@ Licensed under the CC BY-NC-SA 4.0 license (https://creativecommons.org/licenses
 Anime-Comic-Game (ACG) subculture sustains a billion-pound industry and has mil- lions of fans around the world[1]. However, making of animations and cartoons is a tedious process that requires excessive amount of dedication and talent. In recent years, with the accelerating development of deep learninig techinique, convolutional neural network, generative adversarial network have achieved significant success in style transfer, which refers to the process of translate a natural image into artistic paintings. This image to image tranlation has been applied in a number of fields, in- cluding image segmentation, comic colourisation, text analysis. Nonetheless, there is still a great deal of untapped potential for deep learning in the ACG industry. The objective of this project is to develop a method for automatic ACG character creation using deep learning technique.
 
 ### GAN loss
-![enter image description here](https://picasaweb.google.com/109592484409092847965/6732498736559424433#6732498741355839906)
 
-![enter image description here](https://picasaweb.google.com/109592484409092847965/6732498970511558993#6732498974343700562)
+[![nAztN6.md.jpg](https://s2.ax1x.com/2019/09/04/nAztN6.md.jpg)](https://imgchr.com/i/nAztN6)
+[![nAzYAx.md.jpg](https://s2.ax1x.com/2019/09/04/nAzYAx.md.jpg)](https://imgchr.com/i/nAzYAx)
 
+[![nAza9O.md.png](https://s2.ax1x.com/2019/09/04/nAza9O.md.png)](https://imgchr.com/i/nAza9O)
+[![nAzN4K.md.png](https://s2.ax1x.com/2019/09/04/nAzN4K.md.png)](https://imgchr.com/i/nAzN4K)
+[![nAzd3D.md.png](https://s2.ax1x.com/2019/09/04/nAzd3D.md.png)](https://imgchr.com/i/nAzd3D)
 ### Dataset
 Anime faces: [https://www.thiswaifudoesnotexist.net/](https://www.thiswaifudoesnotexist.net/)
 
@@ -62,5 +65,6 @@ In my dissertation...
 
 ![enter image description here](https://picasaweb.google.com/109592484409092847965/6732498466542821969#6732498472290306418)
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbMzExNzQ2MDY0LDM3NTMyNTg0MF19
+eyJoaXN0b3J5IjpbLTIxMjExMDc5NTcsMzExNzQ2MDY0LDM3NT
+MyNTg0MF19
 -->
