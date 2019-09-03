@@ -19,14 +19,15 @@ old_dir = '/Users/mikechen/Downloads/img_align_celeba'
 new_dir = '/Users/mikechen/Downloads/celebA'
 data_path = '/Users/mikechen/Downloads/proc_align_celeba.pkl'
 test = '/Users/mikechen/Downloads/Anno/output.txt'
-mask_path = '/Users/mikechen/Downloads/masks/'
+mask_path = '/Users/mikechen/Downloads/masks_All/'
 
 man_txt = '/Users/mikechen/Downloads/Anno/All_people.txt'
 man_txt_1 = '/Users/mikechen/Downloads/Anno/All_people_1.txt'
 man_headpose = '/Users/mikechen/Downloads/Anno/All_people_headpose.txt'
+man_dir = '/Users/mikechen/Downloads/celebA_All'
 def process():
     ob = pickle.load(open(data_path, 'rb'))
-    with open(new_txt2,'r') as f:
+    with open(man_headpose,'r') as f:
         for line in f:
             num = line[0:-5]
             print(num)
@@ -155,11 +156,11 @@ def draw_head_pose():
     # plt.show()
 
 def copyfiles():
-    with open(new_txt2, 'r') as f:
+    with open(man_headpose, 'r') as f:
         for line in f:
             old = old_dir+'/'+line[0:-1]
             print(old)
-            new = new_dir+'/'+line[0:-1]
+            new = man_dir+'/'+line[0:-1]
             shutil.copyfile(old, new)
 
 def filter_female():
@@ -200,3 +201,7 @@ if __name__ == '__main__':
     #     for line in f:
     #         count += 1
     # print(count)
+    # copyfiles()
+    ob = pickle.load(open(data_path, 'rb'))
+    landmarks = ob['000014']['landmarks']
+    print(landmarks)
