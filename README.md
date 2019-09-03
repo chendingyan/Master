@@ -29,9 +29,7 @@ Manga: Manga109
 
 -   Python version : Python 3.5.2
     
--   Image processing library(read,write,save,crop) : Scikit-Image, OpenCV2, Pil-
-    
-    low, which mainly used in data preparation process
+-   Image processing library(read,write,save,crop) : Scikit-Image, OpenCV2, Pillow, which mainly used in data preparation process
     
 -   Module for webcrawl images : urllib.request, beautifulsoup4
     
@@ -66,6 +64,6 @@ Best Model can be downloaded at : https://drive.google.com/open?id=1bPvwsrasF8vH
 
 Inception Model can be downloaded at: https://drive.google.com/open?id=1q_Wgs86e5ClsCYVJNVgagsGwAU2Xfd9B
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbNjI2NDIyMjM4LDYxNDEyMTQyMywzMTE3ND
-YwNjQsMzc1MzI1ODQwXX0=
+eyJoaXN0b3J5IjpbMTIxNjAzNDAwOSw2MTQxMjE0MjMsMzExNz
+Q2MDY0LDM3NTMyNTg0MF19
 -->
