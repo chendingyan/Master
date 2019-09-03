@@ -13,6 +13,9 @@ Licensed under the CC BY-NC-SA 4.0 license (https://creativecommons.org/licenses
 ### Introduction
 Anime-Comic-Game (ACG) subculture sustains a billion-pound industry and has mil- lions of fans around the world[1]. However, making of animations and cartoons is a tedious process that requires excessive amount of dedication and talent. In recent years, with the accelerating development of deep learninig techinique, convolutional neural network, generative adversarial network have achieved significant success in style transfer, which refers to the process of translate a natural image into artistic paintings. This image to image tranlation has been applied in a number of fields, in- cluding image segmentation, comic colourisation, text analysis. Nonetheless, there is still a great deal of untapped potential for deep learning in the ACG industry. The objective of this project is to develop a method for automatic ACG character creation using deep learning technique.
 
+### GAN loss
+
+
 ### Dataset
 Anime faces: [https://www.thiswaifudoesnotexist.net/](https://www.thiswaifudoesnotexist.net/)
 BitMoji: [https://google.github.io/cartoonset/index.html](https://google.github.io/cartoonset/index.html)
@@ -47,9 +50,11 @@ All algorithms have been trained on imperial department of computing remote mach
 ### Code Usage
 In my dissertation...
 
+
 ### Result preview
 ![enter image description here](https://picasaweb.google.com/109592484409092847965/6732498200469472481#6732498205487171938)
-
+![enter image description here](https://picasaweb.google.com/109592484409092847965/6732498322966803601#6732498323156758306)
+![enter image description here](https://picasaweb.google.com/109592484409092847965/6732498466542821969#6732498472290306418)
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbMjgzNjQxMjIwXX0=
+eyJoaXN0b3J5IjpbLTg0NTg5NjUzM119
 -->
