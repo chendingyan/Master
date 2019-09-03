@@ -18,10 +18,34 @@ Anime faces: [https://www.thiswaifudoesnotexist.net/](https://www.thiswaifudoesn
 BitMoji: [https://google.github.io/cartoonset/index.html](https://google.github.io/cartoonset/index.html)
 Manga: Manga109
 
-### Code usage
+### Pre-requisite
 
-Please check out the [user manual page](USAGE.md).
+-   Python version : Python 3.5.2
+    
+-   Image processing library(read,write,save,crop) : Scikit-Image, OpenCV2, Pil-
+    
+    low, which mainly used in data preparation process
+    
+-   Module for webcrawl images : urllib.request, beautifulsoup4
+    
+-   Module for compressing/save/extract files : pickle
+    
+-   scientific computations : Numpy
+    
+-   Data visualization : matplotlib.pyplot
+    
+-   Face detection and facial landmark detection : Dlib
+    
+-   Machine learning libraries : Scikit-learn, scipy
+    
+-   Process the model’s configuration : yaml
+    
+-   Deep Learning library : Pytorch
 
+All algorithms have been trained on imperial department of computing remote machine, which is Ubuntu 16.04 with graphicial processing unit supported. I trained on available NVIDIA GeForce GTX 1080 Ti graphics card on dc1218@ladybug.doc.ic.ac.uk.
+
+### Code Usage
+In my 
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbMTAxMDYzNzc4MF19
+eyJoaXN0b3J5IjpbLTk5MTY3NjYyNF19
 -->
