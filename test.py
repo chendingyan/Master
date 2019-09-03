@@ -69,9 +69,9 @@ if 'new_size' in config:
     new_size = config['new_size']
 else:
     if opts.a2b==1:
-        new_size = config['new_size_a']
+        new_size = config['new_size']
     else:
-        new_size = config['new_size_b']
+        new_size = config['new_size']
 
 with torch.no_grad():
     transform = transforms.Compose([transforms.Resize(new_size),
