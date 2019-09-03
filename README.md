@@ -60,7 +60,12 @@ In my dissertation...
 [![nAza9O.md.png](https://s2.ax1x.com/2019/09/04/nAza9O.md.png)](https://imgchr.com/i/nAza9O)
 [![nAzN4K.md.png](https://s2.ax1x.com/2019/09/04/nAzN4K.md.png)](https://imgchr.com/i/nAzN4K)
 [![nAzd3D.md.png](https://s2.ax1x.com/2019/09/04/nAzd3D.md.png)](https://imgchr.com/i/nAzd3D)
+
+### Model Trained 
+Best Model can be downloaded at : https://drive.google.com/open?id=1bPvwsrasF8vHfhTbRizJbeQei9j7nGne
+
+Inception Model can be downloaded at: https://drive.google.com/open?id=1q_Wgs86e5ClsCYVJNVgagsGwAU2Xfd9B
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbNjE0MTIxNDIzLDMxMTc0NjA2NCwzNzUzMj
-U4NDBdfQ==
+eyJoaXN0b3J5IjpbNjI2NDIyMjM4LDYxNDEyMTQyMywzMTE3ND
+YwNjQsMzc1MzI1ODQwXX0=
 -->
