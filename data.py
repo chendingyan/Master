@@ -4,6 +4,8 @@ Licensed under the CC BY-NC-SA 4.0 license (https://creativecommons.org/licenses
 """
 import torch.utils.data as data
 import os.path
+from scipy import misc
+from PIL import Image
 
 def default_loader(path):
     return Image.open(path).convert('RGB')
@@ -35,6 +37,7 @@ class ImageFilelist(data.Dataset):
         img = self.loader(os.path.join(self.root, impath))
         if self.transform is not None:
             img = self.transform(img)
+
 
         return img
 
@@ -101,8 +104,8 @@ def make_dataset(dir):
 
 class ImageFolder(data.Dataset):
 
-    def __init__(self, root, transform=None, return_paths=False,
-                 loader=default_loader):
+    def __init__(self, root, transform=None, mask_transform = None, return_paths=False,
+                 loader=default_loader, mask_path = None):
         imgs = sorted(make_dataset(root))
         if len(imgs) == 0:
             raise(RuntimeError("Found 0 images in: " + root + "\n"
@@ -112,18 +115,37 @@ class ImageFolder(data.Dataset):
         self.root = root
         self.imgs = imgs
         self.transform = transform
+        self.mask_transform = mask_transform
         self.return_paths = return_paths
         self.loader = loader
+        self.mask_path = mask_path
 
     def __getitem__(self, index):
         path = self.imgs[index]
-        img = self.loader(path)
-        if self.transform is not None:
-            img = self.transform(img)
-        if self.return_paths:
-            return img, path
+        if self.mask_path is None:
+            img = self.loader(path)
+            if self.transform is not None:
+                img = self.transform(img)
+            if self.return_paths:
+                return img, path
+            else:
+                return img
         else:
-            return img
+            img = self.loader(path)
+            if self.transform is not None:
+                img = self.transform(img)
+            path = path.split('/')[-1]
+            mask_path = self.mask_path + path[:-4]+'.png'
+
+            mask = misc.imread(mask_path)
+            mask = Image.fromarray(mask)
+            if self.transform is not None:
+                mask = self.mask_transform(mask)
+
+            if self.return_paths:
+                return img, path
+            else:
+                return img, mask
 
     def __len__(self):
         return len(self.imgs)
